@@ -1,7 +1,7 @@
 """Aquarium environment v0"""
 
 # from marl_aquarium.env.aquarium import raw_env
-from env.aquarium import raw_env
+from env.aquarium_refactoring import raw_env
 from pettingzoo.utils import aec_to_parallel, parallel_to_aec
 from pettingzoo.utils.wrappers import AssertOutOfBoundsWrapper, OrderEnforcingWrapper
 
@@ -19,7 +19,7 @@ def env(
     prey_count: int = 16,
     predator_observe_count: int = 1,
     prey_observe_count: int = 3,
-    draw_force_vectors: bool = False,
+    draw_force_vectors: bool = True, # False
     draw_action_vectors: bool = False,
     draw_view_cones: bool = False,
     draw_hit_boxes: bool = False,
