@@ -6,11 +6,18 @@ from typing import Tuple
 
 import pygame
 
+'''
 from marl_aquarium.env import utils
 from marl_aquarium.env.entity import Entity
 from marl_aquarium.env.predator import Predator
 from marl_aquarium.env.prey import Prey
 from marl_aquarium.env.vector import Vector
+'''
+from env import utils
+from env.entity import Entity
+from env.predator import Predator
+from env.prey import Prey
+from env.vector import Vector
 
 
 class View:

@@ -12,6 +12,7 @@ import pygame
 from gymnasium.spaces import Box, Discrete
 from pettingzoo.utils.env import ParallelEnv
 
+"""
 from marl_aquarium.env.entity import Entity
 from marl_aquarium.env.predator import Predator
 from marl_aquarium.env.prey import Prey
@@ -25,6 +26,20 @@ from marl_aquarium.env.utils import (
 )
 from marl_aquarium.env.vector import Vector
 from marl_aquarium.env.view import View
+"""
+from env.entity import Entity
+from env.predator import Predator
+from env.prey import Prey
+from env.utils import (
+    Torus,
+    get_angle_from_vector,
+    get_predator_by_id,
+    get_prey_by_id,
+    get_vector_from_action,
+    scale,
+)
+from env.vector import Vector
+from env.view import View
 
 
 class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
