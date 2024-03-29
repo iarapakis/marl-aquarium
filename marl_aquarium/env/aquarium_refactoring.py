@@ -709,26 +709,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         ), "observer_observation: All values must be between -1 and 1"
         return observation
     
-    '''
-    def prey_observer_observation(
-        self, observer: Entity, obs_min: float = 0, obs_max: float = 1
-    ) -> List[float]:
-        """Get the observations of the current state of the environment of an observer."""
-        position = observer.position
-        direction = observer.orientation_angle
-        speed = observer.velocity.mag()
-        scaled_position_x = scale(position.x, 0, self.width, obs_min, obs_max)
-        scaled_position_y = scale(position.y, 0, self.height, obs_min, obs_max)
-        scaled_direction = scale(direction, -180, 180, obs_min, obs_max)
-        scaled_speed = scale(speed, 0, observer.max_speed, obs_min, obs_max)
-        observation = [1, scaled_position_x, scaled_position_y, scaled_direction, scaled_speed]
-        # print(f'Observer_observation: {len(observation)}')
-
-        assert all(
-            obs_min <= value <= obs_max for value in observation
-        ), "prey_observer_observation: All values must be between -1 and 1"
-        return observation
-    '''
+    
     def nearby_animal_observation(
         self, observer: Entity, animal: Entity, obs_min: float = 0, obs_max: float = 1
     ) -> List[float]:
@@ -764,25 +745,8 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
             obs_min <= value <= obs_max for value in observation
         ), "nearby_animal_observation: All values must be between -1 and 1"
         return observation
-    '''
-    def prey_get_n_closest_animals(
-        self, observer: Entity, other_animals: Sequence[Entity], n_nearest_animals: int
-    ) -> List[Entity]:
-        """Get the n nearest animals to the observer."""
-        distances = [
-            (
-                self.torus.get_distance_in_torus(observer.position, other_animal.position),
-                other_animal,
-            )
-            for other_animal in other_animals
-        ]
-        # Sort the distances list based on the first element of each tuple (the number)
-        sorted_distances = sorted(distances, key=lambda x: x[0])
-        # Get the n elements with the smallest numbers
-        n_nearest = sorted_distances[:n_nearest_animals]
-        closest_animals = [other_animal for (_, other_animal) in n_nearest]
-        return closest_animals
-    '''
+   
+
     def get_n_closest_entities(self, observer: Entity, entities: Sequence[Entity], n: int) -> List[Entity]:
         """Get the n nearest entities to the observer."""
         distances = [
@@ -901,26 +865,6 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         # observations = {fish.id(): get_fish_observations(fish, self, SHARK_NUMBER) for fish in self.fishes}
         return observations
     
-    """
-    def predator_observer_observation(
-        self, observer: Entity, obs_min: float = 0, obs_max: float = 1
-    ) -> Sequence[float]:
-        Get the observations of the current state of the environment of an observer.
-        position = observer.position
-        direction = observer.orientation_angle
-        speed = observer.velocity.mag()
-        scaled_position_x = scale(position.x, 0, self.width, obs_min, obs_max)
-        scaled_position_y = scale(position.y, 0, self.height, obs_min, obs_max)
-        scaled_direction = scale(direction, -180, 180, obs_min, obs_max)
-        scaled_speed = scale(speed, 0, observer.max_speed, obs_min, obs_max)
-        observation = [0, scaled_position_x, scaled_position_y, scaled_direction, scaled_speed]
-
-        assert all(
-            obs_min <= value <= obs_max for value in observation
-        ), "predator_observer_observation: All values must be between -1 and 1"
-        # print(f'Observer_observation: {len(observation)}')
-        return observation
-    """
 
     def predator_nearby_shark_observations(self, observer: Entity) -> Sequence[float]:
         """Get the observations of the current state of the environment of an observer."""
@@ -948,21 +892,6 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
 
         return observations
 
-    '''
-    def predator_get_n_closest_fish(self, observer: Entity) -> Sequence[Entity]:
-        """Get the n nearest animals to the observer."""
-        distances = [
-            (self.torus.get_distance_in_torus(observer.position, fish.position), fish)
-            for fish in self.prey
-        ]
-        # Sort the distances list based on the first element of each tuple (the number)
-        sorted_distances = sorted(distances, key=lambda x: x[0])
-        # Get the n elements with the smallest numbers
-        n_nearest = sorted_distances[: self.prey_observe_count]
-        fishes = [fish for (_, fish) in n_nearest]
-
-        return fishes
-    '''
 
     def predator_nearby_fish_observations(self, observer: Entity) -> Sequence[float]:
         """Get the observations of the current state of the environment of an observer."""
