@@ -689,7 +689,27 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         # if len(fishes) == 0:
         #     total_reward = -200
         return total_reward
+    
+    def observer_observation(
+        self, observer: Entity, obs_min: float = 0, obs_max: float = 1
+    ) -> List[float]:
+        """Get the observations of the current state of the environment of an observer."""
+        position = observer.position
+        direction = observer.orientation_angle
+        speed = observer.velocity.mag()
+        scaled_position_x = scale(position.x, 0, self.width, obs_min, obs_max)
+        scaled_position_y = scale(position.y, 0, self.height, obs_min, obs_max)
+        scaled_direction = scale(direction, -180, 180, obs_min, obs_max)
+        scaled_speed = scale(speed, 0, observer.max_speed, obs_min, obs_max)
+        observation = [1, scaled_position_x, scaled_position_y, scaled_direction, scaled_speed]
+        # print(f'Observer_observation: {len(observation)}')
 
+        assert all(
+            obs_min <= value <= obs_max for value in observation
+        ), "observer_observation: All values must be between -1 and 1"
+        return observation
+    
+    '''
     def prey_observer_observation(
         self, observer: Entity, obs_min: float = 0, obs_max: float = 1
     ) -> List[float]:
@@ -708,7 +728,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
             obs_min <= value <= obs_max for value in observation
         ), "prey_observer_observation: All values must be between -1 and 1"
         return observation
-
+    '''
     def nearby_animal_observation(
         self, observer: Entity, animal: Entity, obs_min: float = 0, obs_max: float = 1
     ) -> List[float]:
@@ -847,7 +867,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         """Get the observations of the current state of the environment of an observer.
         The observations are a list of floats."""
 
-        observed_observer = self.prey_observer_observation(observer)
+        observed_observer = self.observer_observation(observer)
         # print(f'Number of Observer Observations: {len(observed_observer)}')
         # observed_borders = border_observation(observer, aquarium, aquarium.observable_walls)
         # print(f'Number of Border Observations: {len(observed_borders)}')
@@ -880,11 +900,12 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
                 observations[f"fish_{prey_id}"] = np.zeros(self.number_of_fish_observations)
         # observations = {fish.id(): get_fish_observations(fish, self, SHARK_NUMBER) for fish in self.fishes}
         return observations
-
+    
+    """
     def predator_observer_observation(
         self, observer: Entity, obs_min: float = 0, obs_max: float = 1
     ) -> Sequence[float]:
-        """Get the observations of the current state of the environment of an observer."""
+        Get the observations of the current state of the environment of an observer.
         position = observer.position
         direction = observer.orientation_angle
         speed = observer.velocity.mag()
@@ -899,6 +920,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         ), "predator_observer_observation: All values must be between -1 and 1"
         # print(f'Observer_observation: {len(observation)}')
         return observation
+    """
 
     def predator_nearby_shark_observations(self, observer: Entity) -> Sequence[float]:
         """Get the observations of the current state of the environment of an observer."""
@@ -967,7 +989,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
     def get_predator_observations(self, observer: Entity):
         """Get the observations of the current state of the environment of an observer.
         The observations are a list of floats."""
-        observed_observer = self.predator_observer_observation(observer)
+        observed_observer = self.observer_observation(observer)
         # observed_borders = border_observation(observer, aquarium, aquarium.observable_walls)
         observed_sharks = self.predator_nearby_shark_observations(observer)
         observed_fishes = self.predator_nearby_fish_observations(observer)

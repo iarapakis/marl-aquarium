@@ -188,6 +188,18 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         return np.array(self.get_obs())
 
     def step(self, actions: Dict[Any, Any]):
+        '''
+        This function is called by the environment to advance the simulation by one step.
+        Params:
+            actions: A dictionary containing the actions for each agent.
+        Returns:
+            observations: A dictionary containing the observations for each agent.
+            rewards: A dictionary containing the rewards for each agent.
+            terminations: A dictionary containing the termination conditions for each agent.
+            truncations: A dictionary containing the truncation conditions for each agent.
+            infos: A dictionary containing additional information for each agent.
+        '''
+
         catches = []
         for entity in self.all_entities:
             desired_velocity = self.get_desired_velocity_from_action(actions[entity.id()], entity)
@@ -222,6 +234,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
 
         rewards = self.get_rewards(catches)
         for dead_fish in dead_fishes:
+            print("TOTER FISCH")
             rewards[dead_fish] = 0
 
         # Check termination conditions
@@ -269,7 +282,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         """Returns the observations for all agents"""
         predator_observations = self.predator_observe()
         prey_observations = self.prey_observe()
-        observations = prey_observations | predator_observations
+        observations = prey_observations | predator_observations # merge
         return observations
 
     def render(self, mode: str | None = None):
@@ -376,6 +389,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
 
     @functools.lru_cache(maxsize=None)  # type: ignore
     def observation_space(self, agent: str):  # type: ignore
+        # TODO: probably change to one observation space for each agent which looks like observer + n*neighbors
         # Predator
         if agent.startswith("predator"):
             return Box(
