@@ -828,67 +828,45 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         return observations
     
 
-    def predator_nearby_shark_observations(self, observer: Entity) -> Sequence[float]:
+    def predator_nearby_animal_observations(self, observer: Entity, animals: Sequence[Entity], observe_count: int, fov_enabled: bool, get_closest_animals_func=None) -> Sequence[float]:
         """Get the observations of the current state of the environment of an observer."""
         observations = []
-        if self.fov_enabled:
-            for shark in self.predators:
+        if fov_enabled:
+            for animal in animals:
                 if (
                     self.torus.check_if_entity_is_in_view_in_torus(
-                        observer, shark, self.prey_view_distance, self.prey_fov
+                        observer, animal, self.prey_view_distance, self.prey_fov
                     )
-                    and len(observations) < self.predator_observe_count * self.obs_size
+                    and len(observations) < observe_count * self.obs_size
                 ):
-                    observation = self.nearby_animal_observation(observer, shark)
-                    observations += observation
-        # print(f'Sharks : {len(all_sharks)}')
-        for shark in self.predators:
-            if shark is not observer:
-                observation = self.nearby_animal_observation(observer, shark)
-                observations += observation
-
-        # print(f'Shark observations: {len(observations)}')
-
-        if len(observations) < self.predator_observe_count * self.obs_size:
-            observations += [0] * (self.predator_observe_count * self.obs_size - len(observations))
-
-        return observations
-
-
-
-    def predator_nearby_fish_observations(self, observer: Entity) -> Sequence[float]:
-        """Get the observations of the current state of the environment of an observer."""
-        observations = []
-        if self.fov_enabled:
-            for fish in self.prey:
-                if self.torus.check_if_entity_is_in_view_in_torus(
-                    observer, fish, self.prey_view_distance, self.prey_fov
-                ):
-                    observation = self.nearby_animal_observation(observer, fish)
+                    observation = self.nearby_animal_observation(observer, animal)
                     observations += observation
         else:
-            closest_fish = self.predator_get_n_closest_fish(observer)
-            for fish in closest_fish:
-                if fish is not observer:
-                    observation = self.nearby_animal_observation(observer, fish)
+            closest_animals = get_closest_animals_func(observer)
+            for animal in closest_animals:
+                if animal is not observer:
+                    observation = self.nearby_animal_observation(observer, animal)
                     observations += observation
-        # print(f'Fish Num diff: {fish_num - len(all_fishes)}')
-        if len(observations) < self.prey_observe_count * self.obs_size:
-            observations += [0] * (self.prey_observe_count * self.obs_size - len(observations))
-        # print(f'Fish observations: {len(observations)}')
+
+        if len(observations) < observe_count * self.obs_size:
+            observations += [0] * (observe_count * self.obs_size - len(observations))
+
         return observations
+
+    def predator_nearby_shark_observations(self, observer: Entity) -> Sequence[float]:
+        return self.predator_nearby_animal_observations(observer, self.predators, self.predator_observe_count, self.fov_enabled)
+
+    def predator_nearby_fish_observations(self, observer: Entity) -> Sequence[float]:
+        return self.predator_nearby_animal_observations(observer, self.prey, self.prey_observe_count, self.fov_enabled, self.predator_get_n_closest_fish)
 
     def get_predator_observations(self, observer: Entity):
         """Get the observations of the current state of the environment of an observer.
         The observations are a list of floats."""
         observed_observer = self.observer_observation(observer)
-        # observed_borders = border_observation(observer, aquarium, aquarium.observable_walls)
         observed_sharks = self.predator_nearby_shark_observations(observer)
         observed_fishes = self.predator_nearby_fish_observations(observer)
 
         observations = np.concatenate((observed_observer, observed_sharks, observed_fishes))
-        # print(f'Total Number of Shark Observations: {len(observations)}')
-        # print(f'Observations: {observations}')
         assert len(observations) == self.number_of_predator_observations
         return observations
 
