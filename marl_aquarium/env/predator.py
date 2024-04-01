@@ -1,4 +1,4 @@
-"""Predator class, inherits from Animal class."""
+"""Predator class, inherits from Entity class."""
 
 from typing import Tuple
 
@@ -9,7 +9,7 @@ from env.vector import Vector
 
 
 class Predator(Entity):
-    """Predator class, inherits from Animal class."""
+    """Predator class, inherits from Entity class."""
 
     identifier = 0
 
