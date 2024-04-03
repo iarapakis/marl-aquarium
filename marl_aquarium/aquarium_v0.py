@@ -1,7 +1,7 @@
 """Aquarium environment v0"""
 
 # from marl_aquarium.env.aquarium import raw_env
-from env.aquarium_refactoring import raw_env
+from env.aquarium_obs_combined import raw_env
 from pettingzoo.utils import aec_to_parallel, parallel_to_aec
 from pettingzoo.utils.wrappers import AssertOutOfBoundsWrapper, OrderEnforcingWrapper
 
