@@ -19,7 +19,7 @@ def env(
     prey_count: int = 16,
     predator_observe_count: int = 1,
     prey_observe_count: int = 3,
-    draw_force_vectors: bool = True, # False
+    draw_force_vectors: bool = False,
     draw_action_vectors: bool = False,
     draw_view_cones: bool = False,
     draw_hit_boxes: bool = False,
