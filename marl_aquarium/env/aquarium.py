@@ -411,6 +411,7 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
         """Updates the prey"""
         prey.recently_died = False
         if self.torus.get_colliding_animal(prey, predators) is not None:
+            print(f"HELLOOOOOOOOOOOOOO")
             if self.keep_prey_count_constant:
                 # TODO: Sharks now get no reward for eating fish
                 prey.death_count += 1
@@ -420,9 +421,11 @@ class raw_env(ParallelEnv[str, Box, Discrete | None]):  # pylint: disable=C0103
                 )
             else:
                 prey.alive = False
-                # print(f'Fish {fish.id()} died')
-                self.current_prey_count -= 1
                 # print(self.number_of_fish)
+                # print(f'Fish {fish.id()} died')
+                print(f'Prey {prey.id()} died', flush=True)
+                print(f'Current prey count: {self.current_prey_count}', flush=True)
+                self.current_prey_count -= 1
         steer_force = desired_velocity.copy()
         steer_force.sub(prey.velocity)
         steer_force.limit(self.prey_max_steer_force)
